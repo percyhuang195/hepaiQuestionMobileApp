@@ -3,35 +3,53 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hepai/main.dart';
+import 'package:hepai/question.dart';
 
 import 'dataClass.dart';
 
 class detailsPage extends StatefulWidget {
-  const detailsPage({super.key, required this.data});
+  const detailsPage({super.key, required this.questionID});
 
-  final int data;
+  final int questionID;
 
   @override
-  State<detailsPage> createState() => _detailsPageState(data: data);
+  State<detailsPage> createState() => _detailsPageState(questionID: questionID);
 }
 
 class _detailsPageState extends State<detailsPage> {
 
-  _detailsPageState({required this.data});
-  final int data;
+  _detailsPageState({required this.questionID});
+  final int questionID;
 
   var answerList = ["英國的搖滾樂團","美國的 Hip-Hop 歌手","蒙古的民歌團","阿根廷的探戈舞團"];
   var answer = 0;
   var question = "下列譜例選自披頭四(The Beatles)的歌曲 Hello, Goodbye 曲首的片段,請問披頭四是";
   var details = "這是一份詳解";
-  List<questionData> dataList = [];
-  get currentQuestion => data;
+  var currentQuestion = 0;
+  List<questionData> dataList = [
+    questionData(
+        id: "",
+        haveImage: false,
+        image: "",
+        question: "",
+        selection1: "",
+        selection2: "",
+        selection3: "",
+        selection4: "",
+        answer: 0,
+        keypoint: "",
+        details: ""
+    )
+  ];
 
   Future<void> dataParse() async {
     final String jsonString = await rootBundle.loadString("assets/hepai.json");
     List tempList = jsonDecode(jsonString)["questionList"];
     for (int x = 0; x < tempList.length; x++) {
       questionData tempQuestion = questionData(
+          id: tempList[x]["id"],
+          haveImage: tempList[x]["haveImage"],
+          image: tempList[x]["image"],
           question: tempList[x]["question"],
           selection1: tempList[x]["selection1"],
           selection2: tempList[x]["selection2"],
@@ -43,6 +61,7 @@ class _detailsPageState extends State<detailsPage> {
       );
       dataList.add(tempQuestion);
     }
+    currentQuestion = questionID;
     answerList = [
       dataList[currentQuestion].selection1,
       dataList[currentQuestion].selection2,
@@ -67,7 +86,7 @@ class _detailsPageState extends State<detailsPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Text("HePai-作答區"),
+        title: Text("HePai - 題庫整合系統"),
       ),
       body:SingleChildScrollView(
         child: Column(
@@ -98,6 +117,12 @@ class _detailsPageState extends State<detailsPage> {
                   ),
                 ),
               ),
+            ),
+            Visibility(
+                visible: dataList[currentQuestion].haveImage,
+                child: Image.asset(
+                    dataList[currentQuestion].image
+                )
             ),
             Container(
               width: 20,
@@ -162,7 +187,7 @@ class _detailsPageState extends State<detailsPage> {
             ),
             GestureDetector(
               onTap: (){
-                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (builder)=>MyHomePage()));
+                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (builder)=>questionPage(questionID: -1)));
                 setState(() {});
               },
               child: Container(
