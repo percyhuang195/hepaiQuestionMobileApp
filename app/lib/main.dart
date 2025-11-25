@@ -16,6 +16,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
+      // APP預設開啟的頁面
       home: const homePage(),
       debugShowCheckedModeBanner: false,
     );

@@ -3,6 +3,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hepai/functionList.dart';
+import 'package:hepai/home.dart';
 
 import 'dataClass.dart';
 import 'details.dart';
@@ -17,15 +19,17 @@ class questionPage extends StatefulWidget {
 
 class _questionPageState extends State<questionPage> {
   _questionPageState({required this.questionID});
-  final int questionID;
+  final int questionID; //傳入的問題ID(非JSON資料中的ID)
 
-  var answerList = ["英國的搖滾樂團","美國的 Hip-Hop 歌手","蒙古的民歌團","阿根廷的探戈舞團"];
-  var answer = 1;
-  var question = "下列譜例選自披頭四(The Beatles)的歌曲 Hello, Goodbye 曲首的片段,請問披頭四是";
-  var answerStatus = false;
-  var currect = false;
-  var currentQuestion = 0;
-  List<questionData> dataList = [
+  var answerList = ["英國的搖滾樂團","美國的 Hip-Hop 歌手","蒙古的民歌團","阿根廷的探戈舞團"]; //問題的選項清單
+  var answer = 1; // 問題位於清單中的位置
+  var question = "下列譜例選自披頭四(The Beatles)的歌曲 Hello, Goodbye 曲首的片段,請問披頭四是"; //問題
+  var answerStatus = false; //是否已經回答問題(切換顯示UI用)
+  var currect = false; //答題是否正確
+  var currentQuestion = 0; // 現在的問題ID(稍後將修改為傳入的問題ID)
+  List<questionRecordData> questionRecordDataList = []; // 從PF(本地存儲空間)中抓到的問題回答紀錄
+  var todayDate = DateTime.now().toString().substring(0,10); //今日日期(YYYY-MM-dd)
+  List<questionData> dataList = [ // 題庫中的所有問題(先放假資料避免Range Error)
     questionData(
         id: "",
         haveImage: false,
@@ -41,30 +45,17 @@ class _questionPageState extends State<questionPage> {
     )
   ];
 
-  Future<void> dataParse() async{
-    final String jsonString = await rootBundle.loadString("assets/hepai.json");
-    List tempList = jsonDecode(jsonString)["questionList"];
-    for (int x = 0; x < tempList.length; x++){
-      questionData tempQuestion = questionData(
-          id: tempList[x]["id"],
-          haveImage: tempList[x]["haveImage"],
-          image: tempList[x]["image"],
-          question: tempList[x]["question"],
-          selection1: tempList[x]["selection1"],
-          selection2: tempList[x]["selection2"],
-          selection3: tempList[x]["selection3"],
-          selection4: tempList[x]["selection4"],
-          answer: tempList[x]["answer"],
-          keypoint: tempList[x]["keypoint"],
-          details: tempList[x]["details"]
-      );
-      dataList.add(tempQuestion);
-    }
+  // 解析題庫問題資料，並整理畫面資訊
+  Future<void> parseData() async{
+    // 解析JSON題目資料
+    dataList = await parseJsonQuestion();
+    // 判斷是否傳入問題ID，若無則隨機選題
     if (questionID != -1){
       currentQuestion = questionID;
     }else{
-      currentQuestion = Random().nextInt(dataList.length - 1) + 1;
+      currentQuestion = Random().nextInt(dataList.length - 1);
     }
+    // 設置題目資料(答案、選項和問題)
     answerList = [
       dataList[currentQuestion].selection1,
       dataList[currentQuestion].selection2,
@@ -79,16 +70,37 @@ class _questionPageState extends State<questionPage> {
   @override
   void initState() {
     super.initState();
-    dataParse();
+    // 原生溝通通道訊息接收
+    MethodChannel(channel).setMethodCallHandler((call) async{
+      if (call.method == "questionRecordData"){
+        questionRecordDataList = decodeQuestionRecordData(jsonDecode(call.arguments));
+      }
+      setState(() {});
+    });
+    // 向Android端sharedPreferences請求獲取本地存儲資料
+    MethodChannel(channel).invokeMethod("fetchQuestionRecordData");
+    // 呼叫解析題庫問題資料的函式
+    parseData();
     setState(() {});
   }
 
+  // APP 畫面UI
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
-          title: Text("HePai - 題庫整合系統"),
+          title: Row(
+            children: [
+              IconButton(
+                onPressed: (){
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (builder)=>homePage()));
+                },
+                icon: Icon(Icons.arrow_back)
+              ),
+              Text("HePai - 題庫整合系統")
+            ],
+          ),
         ),
         body: Column(
           children: [
@@ -142,10 +154,23 @@ class _questionPageState extends State<questionPage> {
                             ),
                             GestureDetector(
                               onTap: (){
+                                // 判斷答題是否正確
                                 if (index == answer){
                                   currect = true;
                                 }
+                                // 切換答題狀態(已回答問題)
                                 answerStatus = true;
+                                // 新增一筆答題紀錄資料
+                                questionRecordDataList.add(
+                                  questionRecordData(
+                                    answerTime: DateTime.timestamp().toString().substring(0,19),
+                                    questionID: dataList[currentQuestion].id,
+                                    selection: index + 1,
+                                  )
+                                );
+                                // 將答題記錄寫入PF(本地存儲)
+                                var saveData = encodeQuestionRecordData(questionRecordDataList);
+                                MethodChannel(channel).invokeMethod("saveQuestionRecordData",jsonEncode(saveData));
                                 setState(() {});
                               },
                               child: Container(

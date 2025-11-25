@@ -1,11 +1,10 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hepai/main.dart';
 import 'package:hepai/question.dart';
 
 import 'dataClass.dart';
+import 'functionList.dart';
+import 'home.dart';
 
 class detailsPage extends StatefulWidget {
   const detailsPage({super.key, required this.questionID});
@@ -19,14 +18,14 @@ class detailsPage extends StatefulWidget {
 class _detailsPageState extends State<detailsPage> {
 
   _detailsPageState({required this.questionID});
-  final int questionID;
+  final int questionID; //傳入的問題ID(非JSON資料中的ID)
 
-  var answerList = ["英國的搖滾樂團","美國的 Hip-Hop 歌手","蒙古的民歌團","阿根廷的探戈舞團"];
-  var answer = 0;
-  var question = "下列譜例選自披頭四(The Beatles)的歌曲 Hello, Goodbye 曲首的片段,請問披頭四是";
-  var details = "這是一份詳解";
-  var currentQuestion = 0;
-  List<questionData> dataList = [
+  var answerList = ["英國的搖滾樂團","美國的 Hip-Hop 歌手","蒙古的民歌團","阿根廷的探戈舞團"]; //問題的選項清單
+  var answer = 1; // 問題位於清單中的位置
+  var question = "下列譜例選自披頭四(The Beatles)的歌曲 Hello, Goodbye 曲首的片段,請問披頭四是"; //問題
+  var details = "這是一份詳解"; //詳解內容
+  var currentQuestion = 0; // 現在的問題ID(稍後將修改為傳入的問題ID)
+  List<questionData> dataList = [ // 題庫中的所有問題(先放假資料避免Range Error)
     questionData(
         id: "",
         haveImage: false,
@@ -42,26 +41,13 @@ class _detailsPageState extends State<detailsPage> {
     )
   ];
 
-  Future<void> dataParse() async {
-    final String jsonString = await rootBundle.loadString("assets/hepai.json");
-    List tempList = jsonDecode(jsonString)["questionList"];
-    for (int x = 0; x < tempList.length; x++) {
-      questionData tempQuestion = questionData(
-          id: tempList[x]["id"],
-          haveImage: tempList[x]["haveImage"],
-          image: tempList[x]["image"],
-          question: tempList[x]["question"],
-          selection1: tempList[x]["selection1"],
-          selection2: tempList[x]["selection2"],
-          selection3: tempList[x]["selection3"],
-          selection4: tempList[x]["selection4"],
-          answer: tempList[x]["answer"],
-          keypoint: tempList[x]["keypoint"],
-          details: tempList[x]["details"]
-      );
-      dataList.add(tempQuestion);
-    }
+  // 解析題庫問題資料，並整理畫面資訊
+  Future<void> parseData() async{
+    // 解析JSON題目資料
+    dataList = await parseJsonQuestion();
+    // 設定傳入ID做為顯示題目資料用
     currentQuestion = questionID;
+    // 設置題目資料(答案、選項、問題和詳解)
     answerList = [
       dataList[currentQuestion].selection1,
       dataList[currentQuestion].selection2,
@@ -77,7 +63,8 @@ class _detailsPageState extends State<detailsPage> {
   @override
   void initState() {
     super.initState();
-    dataParse();
+    parseData();
+    // 呼叫解析題庫問題資料的函式
     setState(() {});
   }
 
@@ -86,7 +73,17 @@ class _detailsPageState extends State<detailsPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Text("HePai - 題庫整合系統"),
+        title: Row(
+          children: [
+            IconButton(
+                onPressed: (){
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (builder)=>homePage()));
+                },
+                icon: Icon(Icons.arrow_back)
+            ),
+            Text("HePai - 題庫整合系統")
+          ],
+        ),
       ),
       body:SingleChildScrollView(
         child: Column(
