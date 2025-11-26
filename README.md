@@ -1,5 +1,12 @@
 # HePai 題庫整合系統
 - 一個為「大學音樂術科考試」中的選擇題庫，設計的問答/題庫系統，目前支援Android 8以上的安卓裝置。
+
+<div>
+    <img src="./imageList/homePage.jpg" style="width:200px">
+    <img src="./imageList/questionPage.jpg" style="width:200px">
+    <img src="./imageList/questionListPage.jpg" style="width:200px">
+</div>
+
 ## 可運行範例
 - Android APK：請到apkList資料夾中，找到最新版本(或者任意一個你想玩的版本)，並將APK檔案安裝到手機內。
 - 版本限制：理論上Android 8.0以上的大多數手機都可以安裝，若在安裝/使用上遇到問題，請發Issue給我們。

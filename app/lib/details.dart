@@ -81,7 +81,7 @@ class _detailsPageState extends State<detailsPage> {
                 },
                 icon: Icon(Icons.arrow_back)
             ),
-            Text("HePai - 題庫整合系統")
+            Text("HePai - 問題詳解")
           ],
         ),
       ),

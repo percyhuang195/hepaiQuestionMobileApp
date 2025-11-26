@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hepai/dataClass.dart';
 import 'package:hepai/question.dart';
+import 'package:hepai/questionList.dart';
 
 import 'functionList.dart';
 class homePage extends StatefulWidget {
@@ -157,54 +158,59 @@ class _homePageState extends State<homePage> {
             width: 20,
             height: 20,
           ),
-          Container(
-            width: MediaQuery.of(context).size.width * 0.8,
-            height: 150,
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20)
-            ),
-            child: Column(
-              children: [
-                Container(
-                  width: 20,
-                  height: 20,
-                ),
-                Text("題庫解鎖進度",
-                  style: TextStyle(
-                    fontSize: 16
+          GestureDetector(
+            onTap: (){
+              Navigator.of(context).push(MaterialPageRoute(builder: (builder)=>questionListPage()));
+            },
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.8,
+              height: 150,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20)
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    width: 20,
+                    height: 20,
                   ),
-                ),
-                Container(
-                  width: 20,
-                  height: 20,
-                ),
-                Stack(
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.6,
-                      height: 15,
-                      color: Color.fromRGBO(200, 200, 200, 1),
+                  Text("題庫解鎖進度",
+                    style: TextStyle(
+                        fontSize: 16
                     ),
-                    Positioned(
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.6 * (answerQuestion / totalQuestion),
-                        height: 15,
-                        color: Color.fromRGBO(149, 153, 242, 1),
-                      )
-                    )
-                  ],
-                ),
-                Container(
-                  width: 20,
-                  height: 20,
-                ),
-                Text(answerQuestion.toString() + " / " + totalQuestion.toString(),
-                  style: TextStyle(
-                      fontSize: 20
                   ),
-                ),
-              ],
+                  Container(
+                    width: 20,
+                    height: 20,
+                  ),
+                  Stack(
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.6,
+                        height: 15,
+                        color: Color.fromRGBO(200, 200, 200, 1),
+                      ),
+                      Positioned(
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * 0.6 * (answerQuestion / totalQuestion),
+                            height: 15,
+                            color: Color.fromRGBO(149, 153, 242, 1),
+                          )
+                      )
+                    ],
+                  ),
+                  Container(
+                    width: 20,
+                    height: 20,
+                  ),
+                  Text(answerQuestion.toString() + " / " + totalQuestion.toString(),
+                    style: TextStyle(
+                        fontSize: 20
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           Container(

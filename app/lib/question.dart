@@ -98,7 +98,7 @@ class _questionPageState extends State<questionPage> {
                 },
                 icon: Icon(Icons.arrow_back)
               ),
-              Text("HePai - 題庫整合系統")
+              Text("HePai - 作答區")
             ],
           ),
         ),
@@ -163,7 +163,7 @@ class _questionPageState extends State<questionPage> {
                                 // 新增一筆答題紀錄資料
                                 questionRecordDataList.add(
                                   questionRecordData(
-                                    answerTime: DateTime.timestamp().toString().substring(0,19),
+                                    answerTime: DateTime.now().toString().substring(0,19),
                                     questionID: dataList[currentQuestion].id,
                                     selection: index + 1,
                                   )
