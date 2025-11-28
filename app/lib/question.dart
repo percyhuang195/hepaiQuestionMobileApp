@@ -53,7 +53,7 @@ class _questionPageState extends State<questionPage> {
     if (questionID != -1){
       currentQuestion = questionID;
     }else{
-      currentQuestion = Random().nextInt(dataList.length - 1);
+      currentQuestion = Random().nextInt(dataList.length);
     }
     // 設置題目資料(答案、選項和問題)
     answerList = [

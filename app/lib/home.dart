@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hepai/dailyGraph.dart';
 import 'package:hepai/dataClass.dart';
 import 'package:hepai/question.dart';
 import 'package:hepai/questionList.dart';
@@ -95,63 +96,69 @@ class _homePageState extends State<homePage> {
             width: 20,
             height: 20,
           ),
-          Container(
-            width: MediaQuery.of(context).size.width * 0.8,
-            height: 150,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20)
-            ),
-            child: Row(
-              children: [
-                Spacer(),
-                Column(
-                  children: [
-                    Container(
-                      width: 20,
-                      height: 20,
-                    ),
-                    Text("今日作答題數",
-                      style: TextStyle(
-                        fontSize: 16
+          GestureDetector(
+            onTap: (){
+              Navigator.of(context).push(MaterialPageRoute(builder: (builder)=>dailyGraphPage()));
+              setState(() {});
+            },
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.8,
+              height: 150,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20)
+              ),
+              child: Row(
+                children: [
+                  Spacer(),
+                  Column(
+                    children: [
+                      Container(
+                        width: 20,
+                        height: 20,
                       ),
-                    ),
-                    Container(
-                      width: 20,
-                      height: 20,
-                    ),
-                    Text(todayAnswers.toString(),
-                      style: TextStyle(
-                          fontSize: 40
+                      Text("今日作答題數",
+                        style: TextStyle(
+                            fontSize: 16
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                Spacer(),
-                Column(
-                  children: [
-                    Container(
-                      width: 20,
-                      height: 20,
-                    ),
-                    Text("總計作答題數",
-                      style: TextStyle(
-                          fontSize: 16
+                      Container(
+                        width: 20,
+                        height: 20,
                       ),
-                    ),
-                    Container(
-                      width: 20,
-                      height: 20,
-                    ),
-                    Text(totalAnswers.toString(),
-                      style: TextStyle(
-                          fontSize: 40
+                      Text(todayAnswers.toString(),
+                        style: TextStyle(
+                            fontSize: 40
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                Spacer(),
-              ],
+                    ],
+                  ),
+                  Spacer(),
+                  Column(
+                    children: [
+                      Container(
+                        width: 20,
+                        height: 20,
+                      ),
+                      Text("總計作答題數",
+                        style: TextStyle(
+                            fontSize: 16
+                        ),
+                      ),
+                      Container(
+                        width: 20,
+                        height: 20,
+                      ),
+                      Text(totalAnswers.toString(),
+                        style: TextStyle(
+                            fontSize: 40
+                        ),
+                      ),
+                    ],
+                  ),
+                  Spacer(),
+                ],
+              ),
             ),
           ),
           Container(
