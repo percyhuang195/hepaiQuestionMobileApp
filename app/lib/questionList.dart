@@ -25,6 +25,7 @@ class _questionListPageState extends State<questionListPage> {
   // 解析題庫問題資料，並整理畫面資訊
   Future<void> parseData() async{
     dataList = await parseJsonQuestion();
+    isQuestionAnswerList.clear();
     // 初始化已答題的題數資料
     for (int x = 0; x < dataList.length; x++){
       isQuestionAnswerList.add(false);
@@ -35,12 +36,6 @@ class _questionListPageState extends State<questionListPage> {
         if (questionRecordDataList[x].questionID == dataList[y].id){
           isQuestionAnswerList[y] = true;
         }
-      }
-    }
-    // 依據剛才的結果，統計所有已回答的題目數量
-    for (int x = 0; x < isQuestionAnswerList.length;x++){
-      if (isQuestionAnswerList[x] == true){
-        answerQuestion += 1;
       }
     }
     setState(() {});
@@ -59,6 +54,7 @@ class _questionListPageState extends State<questionListPage> {
     });
     // 向Android端sharedPreferences請求獲取本地存儲資料
     MethodChannel(channel).invokeMethod("fetchQuestionRecordData");
+    parseData();
   }
 
 
@@ -103,16 +99,16 @@ class _questionListPageState extends State<questionListPage> {
             height: 20,
           ),
           SizedBox(
-            width: MediaQuery.of(context).size.width * 0.8,
+            width: 280,
             height: MediaQuery.of(context).size.height * 0.6,
             child: ListView.builder(
-              itemCount: (dataList.length / 4).toInt() + 1,
+              itemCount: (isQuestionAnswerList.length / 4).toInt() + 1,
               itemBuilder: (context,index){
                 return SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.8,
+                  width: 280,
                   height: 70,
                   child:ListView.builder(
-                      itemCount: dataList.length - index * 4 > 4 ? 4 : (dataList.length - index * 4) % 4,
+                      itemCount: isQuestionAnswerList.length - index * 4 > 4 ? 4 : (isQuestionAnswerList.length - index * 4) % 4,
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (context,index2){
                         var targetID = index * 4 + index2;

@@ -32,12 +32,15 @@ class _dailyGraphPageState extends State<dailyGraphPage> {
       if (displayDataList.isEmpty){
         displayDataList.add(dateRecordData(date: questionRecordDataList[x].answerTime.substring(0,10), answerCount: 1));
       }else{
+        var isInListFlag = false;
         for (int a = 0; a < displayDataList.length; a++){
           if (questionRecordDataList[x].answerTime.substring(0,10) == displayDataList[a].date){
             displayDataList[a].answerCount += 1;
-          }else {
-            displayDataList.add(dateRecordData(date: questionRecordDataList[x].answerTime.substring(0,10), answerCount: 1));
+            isInListFlag = true;
           }
+        }
+        if (!isInListFlag){
+          displayDataList.add(dateRecordData(date: questionRecordDataList[x].answerTime.substring(0,10), answerCount: 1));
         }
       }
       totalAnswers += 1;
